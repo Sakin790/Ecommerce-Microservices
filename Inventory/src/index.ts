@@ -4,3 +4,5 @@ import { eq } from "drizzle-orm";
 import { inventoryTable } from "./db/schema";
 
 const db = drizzle(process.env.DATABASE_URL!);
+
+export { db };
