@@ -131,5 +131,24 @@ class Inventory {
         );
     }
   });
+
+  static getStock = asyncHandler(async (req: Request, res: Response) => {
+    try {
+      const result = await db
+        .select({
+          stock: inventoryTable.stock,
+        })
+        .from(inventoryTable);
+      return res.json(
+        new ApiResponse(200, result, "Stock Returned successfully")
+      );
+    } catch (error) {
+      return res
+        .status(500)
+        .json(
+          new ApiError(500, "Something went wrong when trying to Get the stock")
+        );
+    }
+  });
 }
 export { Inventory };

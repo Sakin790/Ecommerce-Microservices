@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Stock Monitor</title>
+    <script src="https://cdn.socket.io/4.5.0/socket.io.min.js"></script>
+  </head>
+  <body>
+    <h1>Stock Monitorings</h1>
+    <ul id="stock-updates"></ul>
+
+    <script>
+      const socket = io("http://localhost:1000"); // Connect to the server
+      const stockUpdates = document.getElementById("stock-updates");
+
+      // Listen for stock updates
+      socket.on("stock-update", (data) => {
+        const listItem = document.createElement("li");
+        listItem.textContent = `${data.status.toUpperCase()}: ${
+          data.itemName
+        } - Stock: ${data.stockQuantity}`;
+        stockUpdates.appendChild(listItem);
+      });
+    </script>
+  </body>
+</html>

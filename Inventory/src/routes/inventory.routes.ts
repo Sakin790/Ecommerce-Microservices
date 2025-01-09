@@ -8,5 +8,6 @@ router.route("/inventory").get(Inventory.inventory);
 router.route("/create-inventories").post(Inventory.createInventory);
 router.route("/update-stock").post(Inventory.updateStock);
 router.route("/reduce-stock").put(Inventory.reduceStock);
+router.route("/get-stock").get(Inventory.getStock);
 
 export { router };

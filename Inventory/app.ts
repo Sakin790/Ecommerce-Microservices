@@ -4,11 +4,12 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || (1000 as number);
+const PORT = 1000;
+
 app.use(express.json());
 const serviceName = "InventoryService";
 
-
-
 app.use("/api/v1", router);
 app.listen(PORT, () => console.info(`${serviceName} listening on ${PORT}`));
+
+export { app };
