@@ -5,6 +5,7 @@ import { asyncHandler } from "../utils/asyncHandler";
 import { db } from "..";
 import { inventoryTable } from "../db/schema";
 import { eq, sql } from "drizzle-orm";
+
 interface InventoryRequestBody {
   name: string;
   stock: number;
