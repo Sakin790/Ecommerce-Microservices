@@ -100,5 +100,36 @@ class Inventory {
         );
     }
   });
+
+  static reduceStock = asyncHandler(async (req: Request, res: Response) => {
+    try {
+      const { id, stock } = req.body;
+      const result = await db
+        .update(inventoryTable)
+        .set({
+          stock: sql`${inventoryTable.stock} - ${stock}`,
+          last_updated: new Date(),
+        })
+        .where(eq(inventoryTable.id, id));
+      if (result.rowCount === 0) {
+        return res
+          .status(404)
+          .json(new ApiError(404, "Inventory item not found"));
+      }
+
+      return res.json(
+        new ApiResponse(200, result, "Stock Reduce successfully")
+      );
+    } catch (error) {
+      return res
+        .status(500)
+        .json(
+          new ApiError(
+            500,
+            "Something went wrong when trying to update the stock"
+          )
+        );
+    }
+  });
 }
 export { Inventory };
