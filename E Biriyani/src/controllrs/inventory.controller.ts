@@ -5,7 +5,8 @@ import { asyncHandler } from "../utils/asyncHandler";
 import { db } from "..";
 import { inventoryTable } from "../db/schema";
 import { eq, sql } from "drizzle-orm";
-
+import { inventorySchema } from "../validation";
+import { z } from "zod";
 interface InventoryRequestBody {
   name: string;
   stock: number;
@@ -47,7 +48,10 @@ class Inventory {
 
   static createInventory = asyncHandler(async (req: Request, res: Response) => {
     try {
-      const { name, stock, warehouse_location } = req.body;
+      // Validate the request body against the schema
+      const validatedBody = inventorySchema.parse(req.body);
+
+      const { name, stock, warehouse_location } = validatedBody;
       const newInventory: InventoryRequestBody = {
         name,
         stock,
@@ -60,6 +64,13 @@ class Inventory {
         .status(201)
         .json(new ApiResponse(200, result, "Inventory Created Successfully"));
     } catch (error) {
+      // Check if the error is a Zod validation error
+      if (error instanceof z.ZodError) {
+        return res
+          .status(400)
+          .json(new ApiError(400, "Validation Error", error.errors));
+      }
+
       return res
         .status(500)
         .json(
