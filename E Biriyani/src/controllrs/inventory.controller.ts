@@ -7,12 +7,15 @@ import { inventoryTable } from "../db/schema";
 import { eq, sql } from "drizzle-orm";
 import { inventorySchema } from "../validation";
 import { z } from "zod";
+import { client } from "../cache/redis";
+
 interface InventoryRequestBody {
   name: string;
   stock: number;
   warehouse_location: string;
   last_updated: Date;
 }
+const CACHE_KEY = "inventory";
 
 class Inventory {
   static inventoryStatus = asyncHandler(async (req: Request, res: Response) => {
@@ -32,7 +35,21 @@ class Inventory {
 
   static inventory = asyncHandler(async (req: Request, res: Response) => {
     try {
+      // Check if data is in cache
+      const cachedData = await client.get(CACHE_KEY);
+
+      if (cachedData) {
+        // Parse the cached data and return it
+        const result = JSON.parse(cachedData);
+        return res.json(new ApiResponse(200, result, "Success (from cache)"));
+      }
+
       const result = await db.select().from(inventoryTable);
+
+      await client.set(CACHE_KEY, JSON.stringify(result), {
+        EX: 60,
+      });
+
       return res.json(new ApiResponse(200, result, "Success"));
     } catch (error) {
       return res
